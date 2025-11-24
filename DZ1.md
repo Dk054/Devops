@@ -39,10 +39,13 @@ sudo docker attach custom-nginx-t2
 sudo docker stop custom-nginx-t2
 sudo docker run -p 8080:81 custom-nginx
 
+sudo docker run -d --name custom-nginx-t2 -p 127.0.0.1:8080:81
 
+sudo iptables -t nat -A PREROUTING -p tcp -d 127.0.0.1 --dport 8080 -j DNAT --to-destination 172.17.0.2:81
+sudo iptables -t nat -A POSTROUTING -p tcp -d 172.17.0.2 --dport 81 -j MASQUERADE
+sudo docker exec -it custom-nginx-t2 curl -I http://127.0.0.1:80
 
-
-
+12. docker rm -f custom-nginx-t2
 
 
 
