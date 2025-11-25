@@ -48,6 +48,8 @@ sudo docker exec -it custom-nginx-t2 curl -I http://127.0.0.1:80
 12. docker rm -f custom-nginx-t2
 
 
+тест
+
 
 
 
