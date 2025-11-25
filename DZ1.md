@@ -46,11 +46,77 @@ sudo iptables -t nat -A POSTROUTING -p tcp -d 172.17.0.2 --dport 81 -j MASQUERAD
 sudo docker exec -it custom-nginx-t2 curl -I http://127.0.0.1:80
 
 12. docker rm -f custom-nginx-t2
+## Задача 4
+1. 
+
+sudo docker pull centos:7
+sudo docker pull debian:latest
+docker ps
+docker run -d --name centos1 -v "$(pwd)":/data centos:7 sleep infinity
+docker run -d --name debian1 -v "$(pwd)":/data debian:latest sleep infinity
+docker exec -it centos1 bash -lc 'echo "Пример centos1" > /data/file_from_centos.txt'
+echo "Файл с хоста" > "$(pwd)/file_from_host.txt"
+docker exec -it debian1 bash -lc 'ls -la /data && echo "--- содержимое file_from_centos.txt ---" && cat /data/file_from_centos.txt && echo "--- содержимое file_from_host.txt ---" && cat /data/file_from_host.txt'
 
 
-# git config --global user.name "dk"
-git fetch
-find .git/objects -size 0 -delete
+## Задача 5
+1. mkdir -p /tmp/netology/docker/task5
+vi /tmp/netology/docker/task5/compose.yaml
+vi /tmp/netology/docker/task5/docker-compose.yaml
+- Docker Compose (команда docker compose) ищет файл с именем docker-compose.yml или docker-compose.yaml по умолчанию в текущей директории. Имя compose.yaml не входит в список стандартных имен.
+2.
+x-include:
+- ./docker-compose.yaml
+docker-compose -f compose.yaml -f docker-compose.yaml up -d
+3.
+- создаю докерфайл для custom-nginx
+mkdir custom-nginx
+cat > custom-nginx/Dockerfile <<'EOF'
+FROM nginx:alpine
+RUN echo '<h1>Custom NGINX</h1>' > /usr/share/nginx/html/index.html
+EOF
+- собираю образ с тегом custom-nginx:latest
+docker build -t custom-nginx:latest custom-nginx
+- проврка что registry запущен
+curl -I http://localhost:5000/v2/ || true
+- тег  образа для локального registry
+docker tag custom-nginx:latest localhost:5000/custom-nginx:latest
+- пуш 
+docker push localhost:5000/custom-nginx:latest
+- проверка
+curl -s http://localhost:5000/v2/_catalog | jq .
+curl -s http://localhost:5000/v2/custom-nginx/tags/list | jq .
+
+4. 
+скрин
+5.  
+скрин
+6.
+скрин
+7.
+docker-compose up -d --remove-orphans
+
+docker-compose down --remove-orphans
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
